@@ -1,4 +1,15 @@
-# Biblioteca
+<div align="center">
+
+# 📚 Biblioteca Fullstack
+
+[![CI](https://github.com/JuanB12/biblioteca-fullstack/actions/workflows/ci.yml/badge.svg)](https://github.com/JuanB12/biblioteca-fullstack/actions/workflows/ci.yml)
+![Java](https://img.shields.io/badge/Java_21-3776AB?style=flat-square&logo=openjdk&logoColor=FFD43B)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot_3.3-0B1220?style=flat-square&logo=springboot&logoColor=6DB33F)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL_16-3776AB?style=flat-square&logo=postgresql&logoColor=white)
+![React](https://img.shields.io/badge/React_18-0B1220?style=flat-square&logo=react&logoColor=61DAFB)
+![Docker](https://img.shields.io/badge/Docker-3776AB?style=flat-square&logo=docker&logoColor=white)
+
+</div>
 
 Sistema de gestion de prestamos para biblioteca. Backend en Spring Boot (Java 21) con PostgreSQL, autenticacion JWT, notificaciones por correo, integracion con Open Library y un frontend en React + TypeScript.
 
@@ -65,6 +76,16 @@ Las migraciones de Flyway crean el esquema y siembran un usuario ADMIN de prueba
 
 - **Email:** `admin@biblioteca.local`
 - **Password:** `Admin123!`
+
+## Despliegue en Render (demo en vivo)
+
+El repositorio incluye un [Blueprint de Render](render.yaml) que crea en el plan gratuito la base de datos PostgreSQL, la API (Docker) y el frontend (sitio estatico):
+
+1. En [Render](https://render.com), **New → Blueprint** y selecciona este repositorio.
+2. Render crea los tres recursos y genera el `JWT_SECRET` automaticamente.
+3. Si la URL asignada a la API no es `https://biblioteca-api.onrender.com`, actualizala en la regla `/api/*` de `render.yaml`.
+
+> En el plan gratuito la API se "duerme" tras 15 minutos sin uso; la primera peticion puede tardar unos segundos.
 
 ## Desarrollo local (sin Docker)
 
