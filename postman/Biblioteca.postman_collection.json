@@ -1,0 +1,193 @@
+{
+  "info": {
+    "name": "Biblioteca Fullstack",
+    "description": "Coleccion de la API del sistema de prestamos de biblioteca. Configura baseUrl (default http://localhost:8080) y corre 'Login' primero: guarda el JWT automaticamente en la variable {{token}} para el resto de las peticiones.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "token", "value": "" },
+    { "key": "bookId", "value": "1" },
+    { "key": "loanId", "value": "1" },
+    { "key": "reservationId", "value": "1" },
+    { "key": "isbn", "value": "9780307474728" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ana Bibliotecaria\",\n  \"email\": \"ana@biblioteca.local\",\n  \"password\": \"12345678\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"] }
+          }
+        },
+        {
+          "name": "Login (ADMIN seed)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const body = pm.response.json();",
+                  "if (body.token) { pm.collectionVariables.set('token', body.token); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@biblioteca.local\",\n  \"password\": \"Admin123!\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Books",
+      "item": [
+        {
+          "name": "Search catalog",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/books?title=&author=&status=",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "books"],
+              "query": [
+                { "key": "title", "value": "" },
+                { "key": "author", "value": "" },
+                { "key": "status", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Lookup by ISBN (preview, Open Library)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/books/lookup/{{isbn}}", "host": ["{{baseUrl}}"], "path": ["api", "books", "lookup", "{{isbn}}"] }
+          }
+        },
+        {
+          "name": "Create book (ADMIN)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Cien anios de soledad\",\n  \"author\": \"Gabriel Garcia Marquez\",\n  \"isbn\": \"{{isbn}}\",\n  \"publicationYear\": 1967\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/books", "host": ["{{baseUrl}}"], "path": ["api", "books"] }
+          }
+        },
+        {
+          "name": "Delete book (ADMIN)",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/api/books/{{bookId}}", "host": ["{{baseUrl}}"], "path": ["api", "books", "{{bookId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Loans",
+      "item": [
+        {
+          "name": "Create loan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const body = pm.response.json();",
+                  "if (body.id) { pm.collectionVariables.set('loanId', body.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"bookId\": {{bookId}}\n}" },
+            "url": { "raw": "{{baseUrl}}/api/loans", "host": ["{{baseUrl}}"], "path": ["api", "loans"] }
+          }
+        },
+        {
+          "name": "My loans",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/loans/mine", "host": ["{{baseUrl}}"], "path": ["api", "loans", "mine"] }
+          }
+        },
+        {
+          "name": "Return loan",
+          "request": {
+            "method": "PUT",
+            "url": { "raw": "{{baseUrl}}/api/loans/{{loanId}}/return", "host": ["{{baseUrl}}"], "path": ["api", "loans", "{{loanId}}", "return"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reservations",
+      "item": [
+        {
+          "name": "Create reservation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const body = pm.response.json();",
+                  "if (body.id) { pm.collectionVariables.set('reservationId', body.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"bookId\": {{bookId}}\n}" },
+            "url": { "raw": "{{baseUrl}}/api/reservations", "host": ["{{baseUrl}}"], "path": ["api", "reservations"] }
+          }
+        },
+        {
+          "name": "Cancel reservation",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/api/reservations/{{reservationId}}", "host": ["{{baseUrl}}"], "path": ["api", "reservations", "{{reservationId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Stats (ADMIN)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/admin/stats", "host": ["{{baseUrl}}"], "path": ["api", "admin", "stats"] }
+          }
+        }
+      ]
+    }
+  ]
+}

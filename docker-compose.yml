@@ -1,0 +1,62 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: biblioteca-postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME:-biblioteca}
+      POSTGRES_USER: ${DB_USER:-biblioteca}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-biblioteca}
+    ports:
+      - "5432:5432"
+    volumes:
+      - biblioteca-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-biblioteca} -d ${DB_NAME:-biblioteca}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    container_name: biblioteca-mailhog
+    ports:
+      - "1025:1025" # SMTP
+      - "8025:8025" # Web UI
+
+  app:
+    build: ./backend
+    container_name: biblioteca-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mailhog:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_HOST: postgres
+      DB_NAME: ${DB_NAME:-biblioteca}
+      DB_USER: ${DB_USER:-biblioteca}
+      DB_PASSWORD: ${DB_PASSWORD:-biblioteca}
+      MAIL_HOST: mailhog
+      MAIL_PORT: 1025
+      MAIL_FROM: ${MAIL_FROM:-biblioteca@biblioteca.local}
+      JWT_SECRET: ${JWT_SECRET:-change-this-dev-secret-change-this-dev-secret}
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  frontend:
+    build: ./frontend
+    container_name: biblioteca-frontend
+    depends_on:
+      - app
+    ports:
+      - "5173:80"
+
+volumes:
+  biblioteca-postgres-data:

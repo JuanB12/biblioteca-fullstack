@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"></head>
+<body style="font-family: Arial, sans-serif; background:#f4f5f7; margin:0; padding:24px;">
+  <table role="presentation" width="100%" style="max-width:520px; margin:0 auto; background:#ffffff; border-radius:8px; overflow:hidden;">
+    <tr><td style="background:#7a1f1f; padding:20px 24px;">
+      <h1 style="color:#ffffff; font-size:18px; margin:0;">Biblioteca — Cuenta bloqueada temporalmente</h1>
+    </td></tr>
+    <tr><td style="padding:24px; color:#222;">
+      <p>Hola <strong th:text="${userName}">Nombre</strong>,</p>
+      <p>Tu cuenta acumulo 3 o mas atrasos en los ultimos 90 dias, asi que quedo bloqueada
+         para pedir nuevos prestamos.</p>
+      <p>Podras volver a pedir prestamos a partir de:
+         <strong th:text="${blockedUntil}">22/01/2026</strong>.
+      </p>
+      <p style="color:#666; font-size:13px;">Si crees que esto es un error, contacta a un administrador de la biblioteca.</p>
+    </td></tr>
+  </table>
+</body>
+</html>
